@@ -290,6 +290,11 @@ def run(args):
   g = gen_graph(parameters)
   model = TrajTransformer(parameters=parameters, graph=g)
 
+  # Load pretrained model if path is provided
+  if args.pretrained_model:
+    print(f'Loading pretrained model from {args.pretrained_model}')
+    model.load_state_dict(torch.load(args.pretrained_model))
+
   criterion = nn.NLLLoss()
   optimizer = optim.Adam(
     filter(lambda p: p.requires_grad, model.parameters()), lr=parameters.lr, weight_decay=parameters.L2
@@ -370,7 +375,7 @@ if __name__ == '__main__':
   parser.add_argument('--epoch_max', type=int, default=50)
   parser.add_argument('--data_path', type=str, default='../data/')
   parser.add_argument('--save_path', type=str, default='../results/')
-  parser.add_argument('--pretrain', type=int, default=0)
+  parser.add_argument('--pretrained_model', type=str, default='', help='path to pretrained model file')
   args = parser.parse_args()
 
   ours_acc = run(args)
